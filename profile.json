@@ -1,0 +1,142 @@
+{
+  "evidence_bundle_profile_version": "0.1",
+  "profile_id": "legal-applicant-bias-coverage-v0.1",
+  "title": "Legal AI Bias Coverage Lab",
+  "purpose": "Profile of the Evidence Bundle spec scoped to pre-deployment + ongoing-monitoring bias / equity-coverage evidence for AI tools used in the practice of law. Covers AI-assisted jury selection (Batson framework), AI-assisted sentencing recommendations (post-ProPublica COMPAS cautionary), AI immigration case triage, AI public defender caseload assignment, AI eDiscovery predictive coding (TAR), AI civil rights case screening, AI contract review for discrimination clauses, and AI client intake. Anchored to: Title VI (federal financial assistance) + Title VII (employment) + Fourteenth Amendment Equal Protection + Sixth Amendment effective assistance + Batson v. Kentucky + ABA Criminal Justice Standards + state bar disparate-impact frameworks. NOT a state-bar attestation. NOT a substitute for outside-counsel civil-rights review.",
+  "applies_to": [
+    "law-firm-litigation-practice",
+    "law-firm-criminal-defense-practice",
+    "law-firm-immigration-practice",
+    "public-defender-office",
+    "state-attorney-general-office-using-ai",
+    "ediscovery-vendor-with-predictive-coding",
+    "legal-ai-vendor-marketed-to-litigation-attorneys",
+    "court-pretrial-services-using-risk-assessment-ai"
+  ],
+  "subgroup_taxonomies": {
+    "race_ethnicity_omb_spd15_revised": {
+      "source": "OMB Statistical Policy Directive 15 (revised March 2024)",
+      "values": ["AIAN", "ASIAN", "BLACK", "HISP", "MENA", "NHPI", "WHITE", "TWO_OR_MORE_RACES", "DECLINED"]
+    },
+    "sex_at_birth": {
+      "source": "OMB SPD 15",
+      "values": ["FEMALE", "MALE", "DECLINED"]
+    },
+    "disability_status": {
+      "source": "ADA Title II + Section 504",
+      "values": ["disability-disclosed-yes", "disability-disclosed-no", "no-disclosure"]
+    },
+    "age_band": {
+      "source": "ADEA + juvenile-justice frameworks",
+      "values": ["under-18-juvenile", "18-25", "26-39", "40-49", "50-59", "60-69", "70+"]
+    },
+    "limited_english_proficiency": {
+      "source": "Title VI implementing regulations 28 CFR §42.405(d)",
+      "values": ["lep-yes", "lep-no", "no-disclosure"]
+    },
+    "indigent_defendant_status": {
+      "source": "Sixth Amendment (Gideon v. Wainwright) + state public-defender eligibility",
+      "values": ["indigent-public-defender-assigned", "indigent-private-counsel-by-court", "non-indigent-retained-counsel", "pro-se", "no-disclosure"]
+    },
+    "immigration_status_disclosed": {
+      "source": "INA + state-AG immigration-status non-disclosure rules",
+      "values": ["us-citizen", "lawful-permanent-resident", "non-immigrant-visa", "asylum-seeker", "undocumented-known", "status-undisclosed-by-policy"]
+    },
+    "criminal_history_band": {
+      "source": "FBI NCIC categories + state criminal-history",
+      "values": ["no-prior-conviction", "misdemeanor-only", "non-violent-felony", "violent-felony", "sealed-or-expunged", "no-disclosure"]
+    }
+  },
+  "additional_dimensions": [
+    {"id": "case-venue-state-district",                  "rationale": "Geographic disparity in AI tool deployment across federal districts + state courts"},
+    {"id": "matter-funding-source",                      "rationale": "Pro bono / contingency / hourly / public-defender — affects which AI tools attorneys can afford to use"},
+    {"id": "ediscovery-document-language",               "rationale": "Title VI LEP — TAR predictive coding accuracy on non-English documents"},
+    {"id": "represented-vs-pro-se",                      "rationale": "AI tool access disparity — pro se litigants typically lack tool access"},
+    {"id": "trial-vs-plea-vs-pretrial-diversion-outcome","rationale": "Sentencing-AI recommendation distribution across outcome paths"},
+    {"id": "appellate-stage-vs-trial-stage",             "rationale": "AI tool accuracy varies — appellate work demands citation-level precision"},
+    {"id": "interpreter-required-yes-no",                "rationale": "Procedural-fairness measure — Title VI + state court LEP plan"}
+  ],
+  "thresholds": {
+    "minimum_subgroup_n": 30,
+    "performance_gap_alert_threshold": "5pp-absolute-OR-four-fifths-ratio-below-0.80",
+    "four_fifths_rule_threshold": 0.80,
+    "freshness_window_high_stakes": "P30D",
+    "freshness_window_standard": "P90D",
+    "freshness_window_annual": "P365D",
+    "high_stakes_categories": [
+      "ai-sentencing-recommendation",
+      "ai-pretrial-detention-risk-assessment",
+      "ai-immigration-case-triage",
+      "ai-criminal-defense-strategy-recommendation"
+    ]
+  },
+  "required_metrics": [
+    "ai-recommendation-acceptance-rate-per-subgroup",
+    "ai-recommendation-rejection-rate-per-subgroup",
+    "selection-rate-ratio-vs-majority-cohort",
+    "false-positive-rate-per-subgroup",
+    "false-negative-rate-per-subgroup",
+    "case-outcome-distribution-per-subgroup",
+    "average-AI-recommendation-severity-per-subgroup",
+    "ediscovery-tar-precision-recall-per-document-language",
+    "interpreter-availability-attestation-when-LEP-disclosed",
+    "ada-accommodation-grant-rate-per-subgroup",
+    "appeal-overturn-rate-of-ai-recommended-outcomes-per-subgroup",
+    "human-attorney-override-rate-per-subgroup"
+  ],
+  "coverage_status_taxonomy": [
+    {"code": "met",                                     "description": "n >= 30 AND gap <= threshold AND four-fifths ratio >= 0.80"},
+    {"code": "below-threshold",                         "description": "n < 30"},
+    {"code": "not-represented",                          "description": "n = 0"},
+    {"code": "gap-exceeded",                             "description": "n adequate but gap > threshold — trigger ABA Rule 3.3 + supervising-attorney review"},
+    {"code": "four-fifths-violation",                    "description": "Selection-rate ratio < 0.80; trigger civil-rights review pathway; ALL ai-sentencing-recommendation + ai-pretrial-detention-risk-assessment outputs to this subgroup MUST go through supervising-attorney sign-off until cleared"},
+    {"code": "remediation-pending",                      "description": "Gap acknowledged with documented remediation"},
+    {"code": "compas-cautionary-pattern-detected",       "description": "Pattern matches ProPublica's 2016 COMPAS analysis (higher false-positive rate for one subgroup AND higher false-negative rate for another) — model-card disclosure REQUIRED to client + tribunal"},
+    {"code": "batson-pattern-detected",                  "description": "AI-assisted peremptory-strike recommendations show statistically significant subgroup-disparate pattern — Batson v. Kentucky framework triggered; attorney MUST review and document a non-discriminatory basis BEFORE acting on the recommendation"},
+    {"code": "lep-pathway-impairment",                   "description": "LEP-disclosed clients' AI-tool accuracy or accommodation grant rate materially below comparator — Title VI pathway not working"},
+    {"code": "indigent-defendant-disparity-detected",    "description": "Public-defender-assigned clients receive systematically lower-quality AI recommendations vs retained-counsel clients — Sixth Amendment effective-assistance + state public-defender equity issue"},
+    {"code": "civil-rights-finding-pending",             "description": "Finding from DOJ Civil Rights Section, state AG civil rights division, state bar disciplinary counsel, or court civil rights office pending"}
+  ],
+  "decision_document_requirements": {
+    "required_when": [
+      "gap-exceeded",
+      "not-represented",
+      "four-fifths-violation",
+      "compas-cautionary-pattern-detected",
+      "batson-pattern-detected",
+      "lep-pathway-impairment",
+      "indigent-defendant-disparity-detected",
+      "civil-rights-finding-pending"
+    ]
+  },
+  "audit_stream_emission_conventions": {
+    "emit_to": "matter-decision-record-audit-stream",
+    "kinds_to_emit": [
+      "legaltech.matter.recommendation-produced",
+      "legaltech.matter.disclosure-to-tribunal-recommended"
+    ],
+    "include_coverage_status": true,
+    "include_compas_cautionary_flag": true,
+    "include_batson_pattern_flag": true,
+    "supervising_attorney_review_required_when": [
+      "four-fifths-violation",
+      "compas-cautionary-pattern-detected",
+      "batson-pattern-detected",
+      "indigent-defendant-disparity-detected"
+    ]
+  },
+  "non_obligations_explicitly": [
+    "This profile does NOT cover non-AI bias in the practice of law (that's a separate civil-rights body of work).",
+    "This profile does NOT establish per-state hiring obligations for law firms (that's HR Tech, see candidate-data-vault-contract-profile).",
+    "This profile does NOT cover judicial AI use (that binds judges, not attorneys)."
+  ],
+  "related": {
+    "kg_protocol_suite_url": "https://suite.kineticgain.com",
+    "evidence_bundle_spec": "https://github.com/mizcausevic-dev/evidence-bundle-spec",
+    "sibling_operator_audit_stream": "https://github.com/mizcausevic-dev/matter-decision-record-audit-stream",
+    "sibling_compliance_evidence_bundle": "https://github.com/mizcausevic-dev/aba-rule-1-6-readiness-evidence-bundle",
+    "sibling_state_bar_tracker": "https://github.com/mizcausevic-dev/state-bar-ai-disclosure-tracker",
+    "sibling_incident_card": "https://github.com/mizcausevic-dev/legal-ai-incident-card-profile",
+    "sibling_vault_contract": "https://github.com/mizcausevic-dev/attorney-client-data-vault-contract-profile"
+  }
+}
